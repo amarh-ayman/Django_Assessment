@@ -1,16 +1,23 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Product, Transaction
+from .models import Product, Transaction, TransactionItem
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
 
-class TransactionSerializer(serializers.ModelSerializer):
+class TransactionItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TransactionItem
+        fields = ('id', 'product', 'quantity')
+        
+class TransactionSerializer(serializers.ModelSerializer): 
+    items = TransactionItemSerializer(many=True, read_only=True)
+
     class Meta:
         model = Transaction
-        fields = '__all__'        
+        fields = ('id', 'cashier', 'number_of_items', 'items', 'transaction_time')
+        read_only_fields = ('id', 'cashier', 'transaction_time')     
 
 class PaySerializer(serializers.Serializer):
     items = serializers.ListField(
@@ -21,8 +28,3 @@ class PaySerializer(serializers.Serializer):
         allow_empty=False
     )
     
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        data['full_name'] = self.user.full_name  # Include user's full name in the token payload
-        return data        

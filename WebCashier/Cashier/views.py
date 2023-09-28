@@ -1,9 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Product, Transaction
-from .serializers import ProductSerializer, TransactionSerializer, CustomTokenObtainPairSerializer
+from .serializers import ProductSerializer, TransactionSerializer
 
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
@@ -58,5 +57,3 @@ class TransactionsReportView(generics.ListAPIView):
 
         return queryset
   
-class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
